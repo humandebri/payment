@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "canisters": {
+    "payments": {
+      "type": "rust",
+      "main": "canisters/payments/src/lib.rs",
+      "candid": "canisters/payments/payments.did",
+      "build": "cargo build --target wasm32-unknown-unknown --package payments --release",
+      "wasm": "target/wasm32-unknown-unknown/release/payments.wasm"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": ""
+    }
+  },
+  "output_env_file": ".env"
+}
+
