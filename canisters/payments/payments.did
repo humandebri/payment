@@ -33,11 +33,36 @@ type Error = variant {
   Other: text;
 };
 
+type Split = record { to: Account; amount: nat };
+
+type CaptureArgs = record { intent_id: text; from: Account };
+type ReleaseArgs = record { intent_id: text; splits: vec Split };
+type RefundArgs = record { intent_id: text; amount: nat };
+
+type EventKind = variant {
+  IntentCreated: record { id: text };
+  Captured: record { id: text; amount: nat };
+  Released: record { id: text; total: nat };
+  Refunded: record { id: text; amount: nat };
+  Expired: record { id: text };
+};
+type Event = record { ts: nat64; kind: EventKind };
+
+type CertifiedEvents = record {
+  events: vec Event;
+  prev_prefix: opt blob;
+  tip_prefix: opt blob;
+  certificate: opt blob;
+};
+
 service : {
-  register_ledger: (text, principal, nat8) -> (result);
+  register_ledger: (text, principal, nat8) -> (variant { ok: null; err: Error });
   get_ledger: (text) -> (opt LedgerInfo) query;
   create_intent: (CreateIntentArgs) -> (variant { ok: PaymentIntent; err: Error });
-  capture: (text) -> (variant { ok: PaymentIntent; err: Error });
+  capture: (CaptureArgs) -> (variant { ok: PaymentIntent; err: Error });
+  release: (ReleaseArgs) -> (variant { ok: PaymentIntent; err: Error });
+  refund: (RefundArgs) -> (variant { ok: PaymentIntent; err: Error });
   get_intent: (text) -> (opt PaymentIntent) query;
+  list_events: (nat64, nat32) -> (vec Event) query;
+  list_events_certified_from: (nat64, nat32) -> (CertifiedEvents) query;
 }
-

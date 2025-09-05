@@ -7,6 +7,7 @@ Features (MVP)
 - Ledger registry for multi-asset setup
 - Deterministic escrow subaccount derivation
 - Candid interface for SDK integration
+- Basic event log and lazy expiry; merchant-only auth on capture/release/refund
 
 Decisions
 - Language: Rust
@@ -18,15 +19,21 @@ Decisions
 Layout
 - `canisters/payments`: Rust canister crate
 - `dfx.json`: workspace config
+- `apps/dashboard`: Next.js + Tailwind + minimal shadcn-style UI
 
 Build/Deploy (local)
 - Requires: `rustup`, `wasm32-unknown-unknown` target, `dfx`
 - Build: `cargo build --target wasm32-unknown-unknown --package payments --release`
 - Deploy: `dfx start --clean` then `dfx deploy payments`
 
-Next
-- Implement `release` and `refund` with balance checks
-- Event log with certified data and pagination
-- TypeScript SDK stubs for `createPaymentIntent` and `capture`
-- PocketIC tests exercising approve/transfer_from with mock ledger
+Dashboard (local)
+- Install deps: `cd apps/dashboard && npm install`
+- Set env: create `apps/dashboard/.env.local` with
+  - `NEXT_PUBLIC_DFX_NETWORK=local`
+  - `PAYMENTS_CANISTER_ID=$(dfx canister id payments)`
+- Run: `npm run dev` (http://localhost:3000)
 
+Next
+- Add certified event log root + pagination
+- TypeScript SDK stubs for `createPaymentIntent`/`capture`/`release`/`refund`
+- PocketIC E2E tests with a mock ICRC-2 ledger
