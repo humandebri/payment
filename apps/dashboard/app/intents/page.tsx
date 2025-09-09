@@ -1,5 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card'
 import { Button } from '../../components/ui/button'
+import Link from 'next/link'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/table'
 
 async function fetchIntents() {
   const base = process.env.NEXT_PUBLIC_BASE_URL || ''
@@ -16,25 +18,32 @@ export default async function IntentsPage() {
         <CardTitle>Intents</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
-          {intents.map((it) => (
-            <div key={it.id} className="border p-3 rounded-md">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-mono text-xs text-muted-foreground">{it.id}</p>
-                  <p className="text-sm">{it.asset} / amount: {it.amount.toString?.() ?? String(it.amount)}</p>
-                  <p className="text-sm">status: {Object.keys(it.status)[0]}</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" disabled>詳細</Button>
-                </div>
-              </div>
-            </div>
-          ))}
-          {intents.length === 0 && <p className="text-sm text-muted-foreground">Intent がありません</p>}
-        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Asset</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {intents.map((it) => (
+              <TableRow key={it.id}>
+                <TableCell className="font-mono text-xs max-w-[280px] truncate" title={it.id}>{it.id}</TableCell>
+                <TableCell>{it.asset}</TableCell>
+                <TableCell>{it.amount.toString?.() ?? String(it.amount)}</TableCell>
+                <TableCell>{Object.keys(it.status)[0]}</TableCell>
+                <TableCell className="text-right">
+                  <Link href={`/intents/${encodeURIComponent(it.id)}`}><Button size="sm" variant="outline">詳細</Button></Link>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        {intents.length === 0 && <p className="text-sm text-muted-foreground">Intent がありません</p>}
       </CardContent>
     </Card>
   )
 }
-
